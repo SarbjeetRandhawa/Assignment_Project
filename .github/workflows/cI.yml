@@ -1,12 +1,11 @@
 name: Backend CI/CD
 
-# Triggers
 on:
   push:
-    branches: [ main, dev ]  # Run on push to main or dev
+    branches: [ main, dev ]
   pull_request:
     branches: [ main, dev ]
-  workflow_dispatch:          # Manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -38,14 +37,9 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      # 6️⃣ Build Docker image
-      - name: Build Docker image
-        run: docker build -t mybackend:latest ./backend
-
-      # 7️⃣ Push Docker image to Docker Hub
-      - name: Build and Push Docker Image
+      # 6️⃣ Build, Tag & Push Docker image
+      - name: Build, Tag and Push Docker Image
         run: |
           docker build -t mybackend:latest ./backend
           docker tag mybackend:latest ${{ secrets.DOCKER_USER }}/mybackend:latest
           docker push ${{ secrets.DOCKER_USER }}/mybackend:latest
-
