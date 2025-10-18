@@ -40,14 +40,14 @@ jobs:
       # 6️⃣ Build, Tag & Push Docker Image
       - name: Build, Tag and Push Docker Image
         run: |
-          # Build local Docker image
+          # Build Docker image from backend folder
           docker build -t mybackend ./backend
 
           # Optional: verify image exists
           docker images
 
-          # Tag image correctly for Docker Hub
+          # Tag image for Docker Hub (no :latest)
           docker tag mybackend ${{ secrets.DOCKER_USER }}/mybackend
 
-          # Push to Docker Hub
+          # Push image to Docker Hub
           docker push ${{ secrets.DOCKER_USER }}/mybackend
