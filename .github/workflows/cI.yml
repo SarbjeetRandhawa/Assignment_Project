@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install --prefix backend
+
+      - name: Run Tests
+        run: npm test --prefix backend
+
+      - name: Build Docker Image
+        run: docker build -t myproject:latest ./backend
+
+      - name: Push to Docker Hub
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+        run: |
+          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+          docker tag myproject:latest $DOCKER_USER/myproject:latest
+          docker push $DOCKER_USER/myproject:latest
