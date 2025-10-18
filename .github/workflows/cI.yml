@@ -43,6 +43,9 @@ jobs:
         run: docker build -t mybackend:latest ./backend
 
       # 7️⃣ Push Docker image to Docker Hub
-      - name: Push Docker image
-        run: docker tag mybackend:latest ${{ secrets.DOCKER_USER }}/mybackend:latest
-      - run: docker push ${{ secrets.DOCKER_USER }}/mybackend:latest
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t mybackend:latest ./backend
+          docker tag mybackend:latest ${{ secrets.DOCKER_USER }}/mybackend:latest
+          docker push ${{ secrets.DOCKER_USER }}/mybackend:latest
+
