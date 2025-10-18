@@ -1,37 +1,48 @@
-name: CI/CD Pipeline
+name: Backend CI/CD
 
+# Triggers
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ main, dev ]  # Run on push to main or dev
   pull_request:
+    branches: [ main, dev ]
+  workflow_dispatch:          # Manual trigger
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
-      - name: Install Dependencies
-        run: npm install --prefix backend
+      # 3️⃣ Install backend dependencies
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
 
-      - name: Run Tests
+      # 4️⃣ Run backend tests
+      - name: Run backend tests
         run: npm test --prefix backend
 
-      - name: Build Docker Image
-        run: docker build -t myproject:latest ./backend
+      # 5️⃣ Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
-      - name: Push to Docker Hub
-        env:
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-        run: |
-          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-          docker tag myproject:latest $DOCKER_USER/myproject:latest
-          docker push $DOCKER_USER/myproject:latest
+      # 6️⃣ Build Docker image
+      - name: Build Docker image
+        run: docker build -t mybackend:latest ./backend
+
+      # 7️⃣ Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: docker tag mybackend:latest ${{ secrets.DOCKER_USER }}/mybackend:latest
+      - run: docker push ${{ secrets.DOCKER_USER }}/mybackend:latest
