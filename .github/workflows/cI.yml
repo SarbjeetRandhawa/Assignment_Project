@@ -37,16 +37,16 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      # 6️⃣ Build, Tag & Push Docker Image (without :latest)
+      # 6️⃣ Build, Tag & Push Docker Image
       - name: Build, Tag and Push Docker Image
         run: |
-          # Build local Docker image (no :latest)
+          # Build local Docker image
           docker build -t mybackend ./backend
 
           # Optional: verify image exists
           docker images
 
-          # Tag image for Docker Hub (no :latest)
+          # Tag image correctly for Docker Hub
           docker tag mybackend ${{ secrets.DOCKER_USER }}/mybackend
 
           # Push to Docker Hub
