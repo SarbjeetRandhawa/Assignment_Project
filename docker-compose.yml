@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/help_study_abroad
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:6
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7
+    restart: always
+
+volumes:
+  mongo-data:
